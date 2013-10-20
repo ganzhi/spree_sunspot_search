@@ -93,6 +93,9 @@ module Spree
         if @solr_search.total > 0
           @hits = @solr_search.hits.collect{|hit| hit.primary_key.to_i}
           base_scope = base_scope.where( ["#{Spree::Product.table_name}.id in (?)", @hits] )
+          if ActiveRecord::Base.connection.adapter_name == "MySQL"
+             base_scope.order("FIELD(id, #{@hits.join ', '})")
+          end
         else
           base_scope = base_scope.where( ["#{Spree::Product.table_name}.id = -1"] )
         end
