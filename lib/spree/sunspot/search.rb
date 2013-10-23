@@ -94,7 +94,7 @@ module Spree
           @hits = @solr_search.hits.collect{|hit| hit.primary_key.to_i}
           base_scope = base_scope.where( ["#{Spree::Product.table_name}.id in (?)", @hits] )
           if ActiveRecord::Base.connection.adapter_name.downcase.index('mysql')
-            base_scope.order("FIELD(id, #{@hits.join ', '})")
+            base_scope = base_scope.order("FIELD(#{Spree::Product.table_name}.id, #{@hits.join ', '})")
           end
         else
           base_scope = base_scope.where( ["#{Spree::Product.table_name}.id = -1"] )
